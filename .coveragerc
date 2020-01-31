@@ -1,0 +1,4 @@
+[run]
+include = inte_screening/*
+omit = inte_screening/tests/*
+branch = 1
