@@ -16,6 +16,13 @@ class SubjectScreeningFormValidator(FormValidator):
                     )
                 }
             )
+        if (
+            self.cleaned_data.get("age_in_years")
+            and self.cleaned_data.get("age_in_years") < 18
+        ):
+            raise forms.ValidationError(
+                {"age_in_years": "Participant must be at least 18 years old."}
+            )
         self.required_if(
             YES, field="unsuitable_for_study", field_required="reasons_unsuitable"
         )

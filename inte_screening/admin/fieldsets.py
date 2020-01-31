@@ -19,10 +19,7 @@ def get_fieldset(collapse=None):
 
 comments_fieldset = (
     "Additional Comments",
-    {"fields": (
-        *part_three_comment_fields,
-    ),
-    },
+    {"fields": (*part_three_comment_fields,),},
 )
 
 calculated_values_fieldset = (

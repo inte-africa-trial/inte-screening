@@ -20,8 +20,7 @@ class SubjectRefusal(
     NonUniqueSubjectIdentifierModelMixin, SiteModelMixin, BaseUuidModel
 ):
 
-    subject_screening = models.ForeignKey(
-        SubjectScreening, on_delete=models.PROTECT)
+    subject_screening = models.ForeignKey(SubjectScreening, on_delete=models.PROTECT)
 
     subject_identifier = models.CharField(max_length=50, editable=False)
 

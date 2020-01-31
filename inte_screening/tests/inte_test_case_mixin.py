@@ -52,31 +52,28 @@ class MetaTestCaseMixin(SiteTestCaseMixin):
     def get_subject_screening(self, report_datetime=None, eligibility_datetime=None):
 
         data = {
-            'screening_consent': YES,
-            'selection_method': RANDOM_SAMPLING,
-            'report_datetime': report_datetime or get_utcnow(),
-            'initials': "EW",
-            'gender': MALE,
-            'age_in_years': 25,
-            'hospital_identifier': "13343322",
-            'hiv_pos': YES,
-            'diabetic': YES,
-            'hypertensive': YES,
-            'lives_nearby': YES,
-            'staying_nearby': YES,
-            'requires_acute_care': NO,
-            'unsuitable_for_study': NO,
-            'unsuitable_agreed': NOT_APPLICABLE,
+            "screening_consent": YES,
+            "selection_method": RANDOM_SAMPLING,
+            "report_datetime": report_datetime or get_utcnow(),
+            "initials": "EW",
+            "gender": MALE,
+            "age_in_years": 25,
+            "hospital_identifier": "13343322",
+            "hiv_pos": YES,
+            "diabetic": YES,
+            "hypertensive": YES,
+            "lives_nearby": YES,
+            "staying_nearby": YES,
+            "requires_acute_care": NO,
+            "unsuitable_for_study": NO,
+            "unsuitable_agreed": NOT_APPLICABLE,
         }
 
-        form = SubjectScreeningForm(
-            data=data, instance=None
-        )
+        form = SubjectScreeningForm(data=data, instance=None)
         form.save()
 
         subject_screening = SubjectScreening.objects.get(
             screening_identifier=form.instance.screening_identifier
-
         )
 
         self.assertTrue(subject_screening.eligible)

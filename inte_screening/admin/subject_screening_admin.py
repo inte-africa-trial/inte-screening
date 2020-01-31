@@ -15,26 +15,6 @@ from ..forms import SubjectScreeningForm
 from ..models import SubjectScreening
 
 
-fields = (
-    "screening_consent",
-    "selection_method",
-    "report_datetime",
-    "initials",
-    "gender",
-    "age_in_years",
-    "hospital_identifier",
-    "hiv_pos",
-    "diabetic",
-    "hypertensive",
-    "lives_nearby",
-    "staying_nearby",
-    "requires_acute_care",
-    "unsuitable_for_study",
-    "reasons_unsuitable",
-    "unsuitable_agreed",
-)
-
-
 @admin.register(SubjectScreening, site=inte_screening_admin)
 class SubjectScreeningAdmin(ModelAdminSubjectDashboardMixin, SimpleHistoryAdmin):
 
@@ -54,31 +34,21 @@ class SubjectScreeningAdmin(ModelAdminSubjectDashboardMixin, SimpleHistoryAdmin)
             {
                 "fields": (
                     "screening_consent",
-                    "selection_method",
                     "report_datetime",
+                    "selection_method",
+                    "clinic_type",
                 ),
             },
         ],
-        [
-            "Demographics",
-            {
-                "fields": (
-                    "initials",
-                    "gender",
-                    "age_in_years",
-                    "hospital_identifier",
-                ),
-            },
-        ],
+        ["Demographics", {"fields": ("initials", "gender", "age_in_years",),},],
         [
             "Criteria",
             {
                 "fields": (
-                    "hiv_pos",
+                    "hiv_status",
                     "diabetic",
                     "hypertensive",
                     "lives_nearby",
-                    "staying_nearby",
                     "requires_acute_care",
                 ),
             },
@@ -113,23 +83,29 @@ class SubjectScreeningAdmin(ModelAdminSubjectDashboardMixin, SimpleHistoryAdmin)
         "consented",
         "refused",
         "eligible",
+        "clinic_type",
+        "diabetic",
+        "hypertensive",
+        "hiv_status",
     )
 
     search_fields = (
         "screening_identifier",
         "subject_identifier",
-        "hospital_identifier",
         "initials",
         "reasons_ineligible",
     )
 
     radio_fields = {
+        "clinic_type": admin.VERTICAL,
+        "diabetic": admin.VERTICAL,
         "gender": admin.VERTICAL,
-        "hiv_pos": admin.VERTICAL,
+        "hiv_status": admin.VERTICAL,
+        "hypertensive": admin.VERTICAL,
         "lives_nearby": admin.VERTICAL,
+        "requires_acute_care": admin.VERTICAL,
         "screening_consent": admin.VERTICAL,
         "selection_method": admin.VERTICAL,
-        "staying_nearby": admin.VERTICAL,
         "unsuitable_agreed": admin.VERTICAL,
         "unsuitable_for_study": admin.VERTICAL,
     }
@@ -139,9 +115,7 @@ class SubjectScreeningAdmin(ModelAdminSubjectDashboardMixin, SimpleHistoryAdmin)
 
     def demographics(self, obj=None):
         return mark_safe(
-            f"{obj.get_gender_display()} {obj.age_in_years}yrs<BR>"
-            f"Initials: {obj.initials.upper()}<BR><BR>"
-            f"Hospital ID: {obj.hospital_identifier}"
+            f"{obj.get_gender_display()} {obj.age_in_years}yrs {obj.initials.upper()}"
         )
 
     def reasons(self, obj=None):
@@ -164,6 +138,5 @@ class SubjectScreeningAdmin(ModelAdminSubjectDashboardMixin, SimpleHistoryAdmin)
                 label=label,
             )
         else:
-            context = dict(title=_("Go to subject dashboard"),
-                           url=url, label=label)
+            context = dict(title=_("Go to subject dashboard"), url=url, label=label)
         return render_to_string("dashboard_button.html", context=context)

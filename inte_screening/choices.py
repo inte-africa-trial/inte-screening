@@ -1,5 +1,10 @@
 from edc_constants.constants import OTHER
 
+CLINIC_CHOICES = (
+    ("ncd_clinic", "NCD Clinic"),
+    ("hiv_clinic", "HIV Clinic"),
+)
+
 REFUSAL_REASONS = (
     ("unwilling_to_say", "I am unwilling to say"),
     ("dont_have_time", "I don't have time"),
