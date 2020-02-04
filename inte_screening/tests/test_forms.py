@@ -8,6 +8,7 @@ from edc_constants.constants import (
 )
 from edc_utils.date import get_utcnow
 
+from ..constants import NCD_CLINIC
 from ..forms import SubjectScreeningForm
 from ..models import SubjectScreening
 
@@ -21,12 +22,9 @@ class TestForms(TestCase):
             "initials": "EW",
             "gender": MALE,
             "age_in_years": 25,
-            "hospital_identifier": "13343322",
-            "hiv_pos": YES,
-            "diabetic": YES,
-            "hypertensive": YES,
+            "clinic_type": NCD_CLINIC,
+            "qualifying_condition": YES,
             "lives_nearby": YES,
-            "staying_nearby": YES,
             "requires_acute_care": NO,
             "unsuitable_for_study": NO,
             "unsuitable_agreed": NOT_APPLICABLE,
@@ -41,16 +39,58 @@ class TestForms(TestCase):
 
         self.assertTrue(SubjectScreening.objects.all()[0].eligible)
 
+    def test_screening_invalid(self):
+
+        data = self.get_data()
+
+        responses = dict(age_in_years=17,)
+
+        for k, v in responses.items():
+            with self.subTest(k=v):
+                data.update({k: v})
+                form = SubjectScreeningForm(data=data, instance=None)
+                form.is_valid()
+                self.assertIn("age_in_years", form._errors)
+
     def test_screening_ineligible(self):
 
         data = self.get_data()
-        data.update(
-            {"hiv_pos": NO, "diabetic": NO, "hypertensive": NO,}
+
+        responses = dict(
+            qualifying_condition=NO, lives_nearby=NO, requires_acute_care=YES,
         )
 
+        for k, v in responses.items():
+            with self.subTest(k=v):
+                data.update({k: v})
+                form = SubjectScreeningForm(data=data, instance=None)
+                form.is_valid()
+                self.assertEqual(form._errors, {})
+                form.save()
+
+                self.assertFalse(SubjectScreening.objects.all()[0].eligible)
+
+    def test_screening_unsuitable(self):
+
+        data = self.get_data()
+
+        data.update(unsuitable_for_study=YES)
         form = SubjectScreeningForm(data=data, instance=None)
         form.is_valid()
-        self.assertEqual(form._errors, {})
-        form.save()
+        self.assertIn("reasons_unsuitable", form._errors)
 
+        data.update(reasons_unsuitable="blah blah")
+        form = SubjectScreeningForm(data=data, instance=None)
+        form.is_valid()
+        self.assertIn("unsuitable_agreed", form._errors)
+
+        data.update(unsuitable_agreed=NO)
+        form = SubjectScreeningForm(data=data, instance=None)
+        form.is_valid()
+        self.assertIn("unsuitable_agreed", form._errors)
+
+        data.update(unsuitable_agreed=YES)
+        form = SubjectScreeningForm(data=data, instance=None)
+        form.is_valid()
+        form.save()
         self.assertFalse(SubjectScreening.objects.all()[0].eligible)

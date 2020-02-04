@@ -13,20 +13,21 @@ from edc_sites.tests.site_test_case_mixin import SiteTestCaseMixin
 from edc_utils.date import get_utcnow
 from edc_visit_tracking.constants import SCHEDULED
 from inte_auth.codenames_by_group import get_codenames_by_group
-from inte_sites.sites import fqdn, meta_sites
+from inte_sites.sites import fqdn, inte_sites
 from inte_subject.models import SubjectVisit
 from inte_visit_schedule.constants import DAY1
 from model_mommy import mommy
 
 from ..models import SubjectScreening
-from inte_screening.forms.subject_screening_form import SubjectScreeningForm
+from ..forms import SubjectScreeningForm
+from ..constants import NCD_CLINIC
 
 
-class MetaTestCaseMixin(SiteTestCaseMixin):
+class InteTestCaseMixin(SiteTestCaseMixin):
 
     fqdn = fqdn
 
-    default_sites = meta_sites
+    default_sites = inte_sites
 
     site_names = [s[1] for s in default_sites]
 
@@ -36,7 +37,7 @@ class MetaTestCaseMixin(SiteTestCaseMixin):
     def setUpClass(cls):
         super().setUpClass()
         if cls.import_randomization_list:
-            RandomizationListImporter(verbose=False)
+            RandomizationListImporter(verbose=False, name="default")
         import_holidays(test=True)
         site_list_data.autodiscover()
         GroupPermissionsUpdater(
@@ -59,11 +60,9 @@ class MetaTestCaseMixin(SiteTestCaseMixin):
             "gender": MALE,
             "age_in_years": 25,
             "hospital_identifier": "13343322",
-            "hiv_pos": YES,
-            "diabetic": YES,
-            "hypertensive": YES,
+            "clinic_type": NCD_CLINIC,
+            "qualifying_condition": YES,
             "lives_nearby": YES,
-            "staying_nearby": YES,
             "requires_acute_care": NO,
             "unsuitable_for_study": NO,
             "unsuitable_agreed": NOT_APPLICABLE,
@@ -84,25 +83,27 @@ class MetaTestCaseMixin(SiteTestCaseMixin):
 
         return subject_screening
 
-    def get_subject_consent(self, subject_screening):
+    def get_subject_consent(self, subject_screening, site_name=None):
+        site_name = site_name or "kinoni"
         return mommy.make_recipe(
-            "meta_consent.subjectconsent",
+            "inte_consent.subjectconsent",
             user_created="erikvw",
             user_modified="erikvw",
             screening_identifier=subject_screening.screening_identifier,
             initials=subject_screening.initials,
             dob=get_utcnow().date()
             - relativedelta(years=subject_screening.age_in_years),
-            site=Site.objects.get(name="hindu_mandal"),
+            site=Site.objects.get(name=site_name),
         )
 
-    def get_subject_visit(self):
+    def get_subject_visit(self, visit_code=None):
+        visit_code = visit_code or DAY1
         subject_screening = self.get_subject_screening()
         subject_consent = self.get_subject_consent(subject_screening)
         subject_identifier = subject_consent.subject_identifier
 
         appointment = Appointment.objects.get(
-            subject_identifier=subject_identifier, visit_code=DAY1
+            subject_identifier=subject_identifier, visit_code=visit_code
         )
         appointment.appt_status = IN_PROGRESS_APPT
         appointment.save()

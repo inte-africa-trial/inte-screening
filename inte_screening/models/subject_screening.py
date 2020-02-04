@@ -5,12 +5,7 @@ from django.core.validators import (
 )
 from django.db import models
 from django_crypto_fields.fields import EncryptedCharField
-from edc_constants.choices import (
-    YES_NO,
-    SELECTION_METHOD,
-    POS_NEG_UNKNOWN,
-    YES_NO_UNKNOWN,
-)
+from edc_constants.choices import YES_NO, SELECTION_METHOD
 from edc_model.models import BaseUuidModel
 from edc_screening.model_mixins import ScreeningModelMixin
 from edc_screening.screening_identifier import ScreeningIdentifier
@@ -50,7 +45,7 @@ class SubjectScreening(
     )
 
     clinic_type = models.CharField(
-        verbose_name="Form which type of clinic was the patient selected",
+        verbose_name="From which clinic was the patient selected",
         max_length=25,
         choices=CLINIC_CHOICES,
     )
@@ -65,24 +60,13 @@ class SubjectScreening(
         blank=False,
     )
 
-    hiv_status = models.CharField(
-        verbose_name="What is the patient's HIV status",
-        max_length=15,
-        choices=POS_NEG_UNKNOWN,
-    )
-
-    diabetic = models.CharField(
+    qualifying_condition = models.CharField(
         verbose_name=(
-            "Has the patient been diagnosed with diabetes (high blood sugar)?"
+            "Does the patient have at least one of the following "
+            "conditions: HIV, Diabetes and/or Hypertension"
         ),
-        max_length=25,
-        choices=YES_NO_UNKNOWN,
-    )
-
-    hypertensive = models.CharField(
-        verbose_name=("Has the patient been diagnosed with hypertension?"),
-        max_length=25,
-        choices=YES_NO_UNKNOWN,
+        max_length=15,
+        choices=YES_NO,
     )
 
     requires_acute_care = models.CharField(
