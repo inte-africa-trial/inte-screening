@@ -1,8 +1,10 @@
 from edc_constants.constants import OTHER
 
+from .constants import NCD_CLINIC, HIV_CLINIC
+
 CLINIC_CHOICES = (
-    ("ncd_clinic", "NCD Clinic"),
-    ("hiv_clinic", "HIV Clinic"),
+    (HIV_CLINIC, "HIV Clinic"),
+    (NCD_CLINIC, "NCD Clinic"),
 )
 
 REFUSAL_REASONS = (

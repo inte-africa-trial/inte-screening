@@ -35,8 +35,8 @@ class SubjectScreeningAdmin(ModelAdminSubjectDashboardMixin, SimpleHistoryAdmin)
                 "fields": (
                     "screening_consent",
                     "report_datetime",
-                    "selection_method",
                     "clinic_type",
+                    "selection_method",
                 ),
             },
         ],
@@ -45,9 +45,7 @@ class SubjectScreeningAdmin(ModelAdminSubjectDashboardMixin, SimpleHistoryAdmin)
             "Criteria",
             {
                 "fields": (
-                    "hiv_status",
-                    "diabetic",
-                    "hypertensive",
+                    "qualifying_condition",
                     "lives_nearby",
                     "requires_acute_care",
                 ),
@@ -84,9 +82,7 @@ class SubjectScreeningAdmin(ModelAdminSubjectDashboardMixin, SimpleHistoryAdmin)
         "refused",
         "eligible",
         "clinic_type",
-        "diabetic",
-        "hypertensive",
-        "hiv_status",
+        "qualifying_condition",
     )
 
     search_fields = (
@@ -98,10 +94,8 @@ class SubjectScreeningAdmin(ModelAdminSubjectDashboardMixin, SimpleHistoryAdmin)
 
     radio_fields = {
         "clinic_type": admin.VERTICAL,
-        "diabetic": admin.VERTICAL,
         "gender": admin.VERTICAL,
-        "hiv_status": admin.VERTICAL,
-        "hypertensive": admin.VERTICAL,
+        "qualifying_condition": admin.VERTICAL,
         "lives_nearby": admin.VERTICAL,
         "requires_acute_care": admin.VERTICAL,
         "screening_consent": admin.VERTICAL,

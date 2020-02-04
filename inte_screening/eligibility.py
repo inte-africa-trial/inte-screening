@@ -1,5 +1,5 @@
 from django.utils.safestring import mark_safe
-from edc_constants.constants import YES, TBD, NO, UNKNOWN, POS, NEG
+from edc_constants.constants import YES, TBD, NO
 from edc_utils.date import get_utcnow
 
 
@@ -33,14 +33,8 @@ def check_eligible_final(obj):
     if obj.eligible:
         obj.reasons_ineligible = None
     else:
-        if obj.hiv_status == NEG:
-            reasons_ineligible.append("HIV(-)")
-        if obj.hiv_status == UNKNOWN:
-            reasons_ineligible.append("HIV(?)")
-        if obj.diabetic in [NO, UNKNOWN]:
-            reasons_ineligible.append("Not Diabetic")
-        if obj.hypertensive in [NO, UNKNOWN]:
-            reasons_ineligible.append("Not Hypertensive")
+        if obj.qualifying_condition == NO:
+            reasons_ineligible.append("No qualifying condition")
         if obj.lives_nearby == NO:
             reasons_ineligible.append("Not in catchment area")
         if obj.requires_acute_care == YES:
@@ -56,14 +50,12 @@ def calculate_eligible_final(obj):
     """Returns YES, NO or TBD.
     """
     if (
-        obj.hiv_status in [POS, NEG, UNKNOWN]
-        and obj.diabetic in [YES, NO, UNKNOWN]
-        and obj.hypertensive in [YES, NO, UNKNOWN]
+        obj.qualifying_condition in [YES, NO]
         and obj.lives_nearby in [YES, NO]
         and obj.requires_acute_care in [YES, NO]
     ):
         eligible = (
-            (obj.hiv_status == POS or obj.diabetic == YES or obj.hypertensive == YES)
+            obj.qualifying_condition == YES
             and obj.lives_nearby == YES
             and obj.requires_acute_care == NO
         )

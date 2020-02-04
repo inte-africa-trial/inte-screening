@@ -29,6 +29,7 @@ DEFAULT_SETTINGS = DefaultTestSettings(
     LIVE_SYSTEM=False,
     RANDOMIZATION_LIST_PATH=join(
         base_dir, app_name, "tests", "test_randomization_list.csv"),
+    EDC_RANDOMIZATION_ASSIGNMENT_MAP={"intervention": 1, "control": 2},
     INSTALLED_APPS=[
         "django.contrib.admin",
         "django.contrib.auth",
