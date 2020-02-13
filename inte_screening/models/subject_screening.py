@@ -19,14 +19,12 @@ class SubjectScreeningModelError(Exception):
 
 
 class ScreeningIdentifier(ScreeningIdentifier):
-
     template = "S{random_string}"
 
 
 class SubjectScreening(
     ScreeningModelMixin, BaseUuidModel,
 ):
-
     identifier_cls = ScreeningIdentifier
 
     screening_consent = models.CharField(

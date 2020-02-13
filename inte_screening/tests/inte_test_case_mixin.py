@@ -7,8 +7,8 @@ from edc_constants.constants import YES, NOT_APPLICABLE, RANDOM_SAMPLING, MALE, 
 from edc_facility.import_holidays import import_holidays
 from edc_facility.models import Holiday
 from edc_list_data.site_list_data import site_list_data
-from edc_randomization.models.randomization_list import RandomizationList
 from edc_randomization.randomization_list_importer import RandomizationListImporter
+from edc_randomization.site_randomizers import site_randomizers
 from edc_sites.tests.site_test_case_mixin import SiteTestCaseMixin
 from edc_utils.date import get_utcnow
 from edc_visit_tracking.constants import SCHEDULED
@@ -24,7 +24,6 @@ from ..constants import NCD_CLINIC
 
 
 class InteTestCaseMixin(SiteTestCaseMixin):
-
     fqdn = fqdn
 
     default_sites = inte_sites
@@ -33,13 +32,17 @@ class InteTestCaseMixin(SiteTestCaseMixin):
 
     import_randomization_list = True
 
+    randomizer_cls = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        if cls.import_randomization_list:
-            RandomizationListImporter(verbose=False, name="default")
         import_holidays(test=True)
         site_list_data.autodiscover()
+        site_randomizers.autodiscover()
+        cls.randomizer_cls = site_randomizers.get("default")
+        if cls.import_randomization_list:
+            RandomizationListImporter(verbose=False, name="default")
         GroupPermissionsUpdater(
             codenames_by_group=get_codenames_by_group(), verbose=True
         )
@@ -47,7 +50,7 @@ class InteTestCaseMixin(SiteTestCaseMixin):
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
-        RandomizationList.objects.all().delete()
+        cls.randomizer_cls.model_cls().objects.all().delete()
         Holiday.objects.all().delete()
 
     def get_subject_screening(self, report_datetime=None, eligibility_datetime=None):
