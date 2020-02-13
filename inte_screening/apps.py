@@ -14,12 +14,10 @@ class AppConfig(DjangoApponfig):
     has_exportable_data = True
 
     def ready(self):
-
         connection_created.connect(activate_foreign_keys)
 
 
 if settings.APP_NAME == "inte_screening":
-
     from dateutil.relativedelta import MO, TU, WE, TH, FR, SA, SU
 
     class EdcFacilityAppConfig(BaseEdcFacilityAppConfig):

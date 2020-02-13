@@ -4,7 +4,6 @@ from edc_sites.models import SiteProfile
 
 
 class AdminSite(DjangoAdminSite):
-
     site_title = "INTE Screening CRFs"
     site_header = "INTE Screening CRFs"
     index_title = "INTE Screening CRFs"

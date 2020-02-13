@@ -17,7 +17,6 @@ from ..models import SubjectScreening
 
 @admin.register(SubjectScreening, site=inte_screening_admin)
 class SubjectScreeningAdmin(ModelAdminSubjectDashboardMixin, SimpleHistoryAdmin):
-
     form = SubjectScreeningForm
 
     post_url_on_delete_name = "screening_listboard_url"
@@ -40,7 +39,7 @@ class SubjectScreeningAdmin(ModelAdminSubjectDashboardMixin, SimpleHistoryAdmin)
                 ),
             },
         ],
-        ["Demographics", {"fields": ("initials", "gender", "age_in_years",),},],
+        ["Demographics", {"fields": ("initials", "gender", "age_in_years")}],
         [
             "Criteria",
             {
