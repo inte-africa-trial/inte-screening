@@ -16,7 +16,7 @@ from inte_auth.codenames_by_group import get_codenames_by_group
 from inte_sites.sites import fqdn, inte_sites
 from inte_subject.models import SubjectVisit
 from inte_visit_schedule.constants import DAY1
-from model_mommy import mommy
+from model_bakery import baker
 
 from ..models import SubjectScreening
 from ..forms import SubjectScreeningForm
@@ -85,7 +85,7 @@ class InteTestCaseMixin(SiteTestCaseMixin):
 
     def get_subject_consent(self, subject_screening, site_name=None):
         site_name = site_name or "kinoni"
-        return mommy.make_recipe(
+        return baker.make_recipe(
             "inte_consent.subjectconsent",
             user_created="erikvw",
             user_modified="erikvw",
