@@ -8,7 +8,6 @@ from edc_facility.import_holidays import import_holidays
 from edc_facility.models import Holiday
 from edc_list_data.site_list_data import site_list_data
 from edc_randomization.randomization_list_importer import RandomizationListImporter
-from edc_randomization.site_randomizers import site_randomizers
 from edc_sites import add_or_update_django_sites
 from edc_sites.tests.site_test_case_mixin import SiteTestCaseMixin
 from edc_utils.date import get_utcnow
@@ -33,26 +32,21 @@ class InteTestCaseMixin(SiteTestCaseMixin):
 
     import_randomization_list = True
 
-    randomizer_cls = None
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         import_holidays(test=True)
         add_or_update_django_sites(sites=inte_sites, fqdn=fqdn)
         site_list_data.autodiscover()
-        site_randomizers.autodiscover()
-        cls.randomizer_cls = site_randomizers.get("default")
-        if cls.import_randomization_list:
-            RandomizationListImporter(verbose=False, name="default")
         GroupPermissionsUpdater(
             codenames_by_group=get_codenames_by_group(), verbose=True
         )
+        if cls.import_randomization_list:
+            RandomizationListImporter(verbose=False, name="default")
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
-        cls.randomizer_cls.model_cls().objects.all().delete()
         Holiday.objects.all().delete()
 
     def get_subject_screening(self, report_datetime=None, eligibility_datetime=None):
