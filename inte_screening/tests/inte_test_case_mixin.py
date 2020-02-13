@@ -9,6 +9,7 @@ from edc_facility.models import Holiday
 from edc_list_data.site_list_data import site_list_data
 from edc_randomization.randomization_list_importer import RandomizationListImporter
 from edc_randomization.site_randomizers import site_randomizers
+from edc_sites import add_or_update_django_sites
 from edc_sites.tests.site_test_case_mixin import SiteTestCaseMixin
 from edc_utils.date import get_utcnow
 from edc_visit_tracking.constants import SCHEDULED
@@ -38,6 +39,7 @@ class InteTestCaseMixin(SiteTestCaseMixin):
     def setUpClass(cls):
         super().setUpClass()
         import_holidays(test=True)
+        add_or_update_django_sites(sites=inte_sites, fqdn=fqdn)
         site_list_data.autodiscover()
         site_randomizers.autodiscover()
         cls.randomizer_cls = site_randomizers.get("default")
@@ -54,7 +56,6 @@ class InteTestCaseMixin(SiteTestCaseMixin):
         Holiday.objects.all().delete()
 
     def get_subject_screening(self, report_datetime=None, eligibility_datetime=None):
-
         data = {
             "screening_consent": YES,
             "selection_method": RANDOM_SAMPLING,
