@@ -9,7 +9,6 @@ from django.test.runner import DiscoverRunner
 from edc_test_utils import DefaultTestSettings
 from os.path import abspath, dirname, join
 
-
 app_name = 'inte_screening'
 base_dir = dirname(abspath(__file__))
 
@@ -27,8 +26,7 @@ DEFAULT_SETTINGS = DefaultTestSettings(
     EMAIL_ENABLED=True,
     HOLIDAY_FILE=join(base_dir, app_name, "tests", "holidays.csv"),
     LIVE_SYSTEM=False,
-    RANDOMIZATION_LIST_PATH=join(
-        base_dir, app_name, "tests", "test_randomization_list.csv"),
+    EDC_RANDOMIZATION_LIST_PATH=join(base_dir, app_name, "tests", "etc"),
     EDC_RANDOMIZATION_ASSIGNMENT_MAP={"intervention": 1, "control": 2},
     INSTALLED_APPS=[
         "django.contrib.admin",
